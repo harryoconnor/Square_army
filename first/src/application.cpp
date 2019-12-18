@@ -6,11 +6,26 @@
 #include <sstream>
 #include <stdlib.h> 
 #include <time.h>  
+#include <stdint.h> /* Needed for uint32_t and uint8_t */
+#include <chrono>
+#include <thread>
 
 #define ASSERT(x) if(!(x)) __debugbreak();
 #define GLCall(x) GLClearError();\
 	x;\
 	ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+
+uint32_t pack_8_into_32(uint8_t c0, uint8_t c1, uint8_t c2, uint8_t c3) {
+	return (c0 << 24) | (c1 << 16) | (c2 << 8) | c3;
+}
+
+uint32_t pack_3_into_1(uint8_t red, uint8_t green, uint8_t blue) {
+	//blue = 250;
+	//red = 0;
+	//green = 0;
+	return (red << 0) | (green << 8) | (blue << 16);
+}
+
 
 static void GLClearError()
 {
@@ -19,8 +34,8 @@ static void GLClearError()
 
 static bool GLLogCall(const char* function, const char* file, int line) {
 	while (GLenum error = glGetError()) {
-		std::cout << "[OpenGL Error] (" << error << "): " << function<<
-			" "<<file<< ":"<< line <<std::endl;
+		std::cout << "[OpenGL Error] (" << error << "): " << function <<
+			" " << file << ":" << line << std::endl;
 		return false;
 	}
 	return true;
@@ -75,7 +90,7 @@ static unsigned int CompileShader(unsigned int type, const std::string& source) 
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* message = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(id, length, &length, message);
-		std::cout << "Failed to compile"<< (type == GL_VERTEX_SHADER ? "vertex" : "fragment")<<" shader" <<std::endl;
+		std::cout << "Failed to compile" << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader" << std::endl;
 		std::cout << message << std::endl;
 		glDeleteShader(id);
 		return 0;
@@ -142,7 +157,7 @@ int main(void)
 	glfwSwapInterval(1);
 
 	if (glewInit() != GLEW_OK) {
-		std::cout << "glew bad"<<std::endl;
+		std::cout << "glew bad" << std::endl;
 	}
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
@@ -166,8 +181,8 @@ int main(void)
 	unsigned int buffer;
 	GLCall(glGenBuffers(1, &buffer));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, 4 *2* sizeof(float), positions, GL_STATIC_DRAW));
-	
+	GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
+
 	GLCall(glEnableVertexAttribArray(0));
 	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 
@@ -178,23 +193,29 @@ int main(void)
 
 
 
-	float* data = new float[square_array_size];
+	uint32_t* data = new uint32_t[square_array_size];
 	for (int i = 0; i < square_array_size; i++) {
-		float r;
-		if (i % 3 == 0) {
-			r = 90;
-			r = 0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1.0f));
+		uint8_t r;
+		uint8_t temp[4];
+		for (int j = 0; j < 3; j++) {
+			//vec4 temp = 0;
+			if (i % 3 == 0) {
+				//r = 0;
+				r = rand() % 256;
+			}
+			else {
+				//r = 0 + static_cast <GLubyte> (rand()) / (static_cast <GLubyte> (RAND_MAX / 1.0f));
+				r = rand() % 256;
+			}
+			temp[j] = r;
 		}
-		else {
-			r = 0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1.0f));
-		}
-		data[i] = r;
+		data[i] = pack_3_into_1(temp[0], temp[1], temp[2]);
 	}
 
 	unsigned int ssbo;
 	GLCall(glGenBuffers(1, &ssbo));
 	GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo));
-	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(float), data, GL_DYNAMIC_DRAW));
+	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(uint32_t), data, GL_DYNAMIC_DRAW));
 	GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo));
 	//GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
 
@@ -214,7 +235,7 @@ int main(void)
 
 	//int location = glGetUniformLocation(shader, "u_square_color");
 	int square_length_location = glGetUniformLocation(shader, "u_square_length");
-	ASSERT(square_length_location != -1);
+	//ASSERT(square_length_location != -1);
 	float red = 0.0f;
 
 	//GLCall(glUniform4f(location, red, 0.3f, 0.8f, 1.0f));
@@ -224,7 +245,7 @@ int main(void)
 	GLCall(glUniform1i(square_length_location, square_size));
 
 	int square_y_squares_location = glGetUniformLocation(shader, "u_y_squares");
-	ASSERT(square_y_squares_location != -1);
+	//ASSERT(square_y_squares_location != -1);
 	GLCall(glUniform1i(square_y_squares_location, y_squares));
 
 	//GLCall(glUniform3fv(location, 10, test));
@@ -241,7 +262,7 @@ int main(void)
 	std::cout << "GL_MAX_FRAGMENT_UNIFORM_BLOCKS: " << max_block_number << std::endl;
 
 
-	while (!glfwWindowShouldClose(window)) 
+	while (!glfwWindowShouldClose(window))
 	{
 		double currentTime = glfwGetTime();
 		frameCount++;
@@ -249,7 +270,7 @@ int main(void)
 		{
 			double fps = frameCount / fps_gap;
 			// Display the frame count here any way you want.
-			std:: cout << fps << std::endl;
+			std::cout << fps << std::endl;
 
 			frameCount = 0;
 			previousTime = currentTime;
@@ -258,20 +279,27 @@ int main(void)
 		if (red > 1) {
 			red = 0;
 		}
+		uint32_t* data = new uint32_t[square_array_size];
 		for (int i = 0; i < square_array_size; i++) {
-			float r;
-			if (i % 3 == 0) {
-				r = 90;
-				r = 0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1.0f));
+			uint8_t r;
+			uint8_t temp[4];
+			for (int j = 0; j < 3; j++) {
+				//vec4 temp = 0;
+				if (i % 3 == 0) {
+					//r = 0;
+					r = rand() % 256;
+				}
+				else {
+					//r = 0 + static_cast <GLubyte> (rand()) / (static_cast <GLubyte> (RAND_MAX / 1.0f));
+					r = rand() % 256;
+				}
+				temp[j] = r;
 			}
-			else {
-				r = 0 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1.0f));
-			}
-			data[i] = r;
+			data[i] = pack_3_into_1(temp[0], temp[1], temp[2]);
 		}
 		//test[0] = red;
 		data[0] = red;
-		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size *sizeof(float), data, GL_DYNAMIC_DRAW));
+		GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(float), data, GL_DYNAMIC_DRAW));
 		//memcpy(p, data, 50 * sizeof(float));
 		//GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, 50 * sizeof(float), data, GL_DYNAMIC_DRAW));
 		//GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo));
@@ -280,13 +308,15 @@ int main(void)
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr ));
+		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
 		/* Poll for and process events */
 		glfwPollEvents();
+
+		//std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 	glDeleteProgram(shader);
 
