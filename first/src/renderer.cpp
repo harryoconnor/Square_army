@@ -16,7 +16,7 @@ Renderer::Renderer(int t_square_size, int t_SCREEN_WIDTH, int t_SCREEN_HEIGHT):s
 bool Renderer::init() {
 	x_squares = SCREEN_WIDTH / square_size;
 	y_squares = SCREEN_HEIGHT / square_size;
-	square_array_size = (x_squares * y_squares);
+	square_array_size = (x_squares * y_squares)*3;
 
 	if (!glfwInit())
 		return -1;
@@ -64,39 +64,34 @@ bool Renderer::init() {
 	merge_shader_extension("res/shaders/basic.shader", "res/shaders/hsluv.shader", "res/shaders/final_shader.shader");
 
 	source = ParseShader("res/shaders/final_shader.shader");
-	std::cout << "VertexSource" << std::endl;
-	std::cout << source.VertexSource << std::endl;
-	std::cout << "FragmentSource" << std::endl;
-	std::cout << source.FragmentSource << std::endl;
+	//std::cout << "VertexSource" << std::endl;
+	//std::cout << source.VertexSource << std::endl;
+	//std::cout << "FragmentSource" << std::endl;
+	//std::cout << source.FragmentSource << std::endl;
 	shader = CreateShader(source.VertexSource, source.FragmentSource);
 	glUseProgram(shader);
 
 	square_length_location = glGetUniformLocation(shader, "u_square_length");
 	GLCall(glUniform1i(square_length_location, square_size));
 
-	square_y_squares_location = glGetUniformLocation(shader, "u_array_width");
+	square_y_squares_location = glGetUniformLocation(shader, "u_x_squares");
 	GLCall(glUniform1i(square_y_squares_location, x_squares));
 
 
-	int max_uniform_size;
-	int max_block_size;
-	int max_block_number;
-	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &max_uniform_size);
-	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &max_block_size);
-	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &max_block_number);
-	std::cout << "GL_MAX_FRAGMENT_UNIFORM_COMPONENTS: " << max_uniform_size << std::endl;
-	std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE: " << max_block_size << std::endl;
-	std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE: " << GL_MAX_UNIFORM_BLOCK_SIZE << std::endl;
-	std::cout << "GL_MAX_FRAGMENT_UNIFORM_BLOCKS: " << max_block_number << std::endl;
+	//int max_uniform_size;
+	//int max_block_size;
+	//int max_block_number;
+	//glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &max_uniform_size);
+	//glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &max_block_size);
+	//glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &max_block_number);
+	//std::cout << "GL_MAX_FRAGMENT_UNIFORM_COMPONENTS: " << max_uniform_size << std::endl;
+	//std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE: " << max_block_size << std::endl;
+	//std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE: " << GL_MAX_UNIFORM_BLOCK_SIZE << std::endl;
+	//std::cout << "GL_MAX_FRAGMENT_UNIFORM_BLOCKS: " << max_block_number << std::endl;
 
 }
 
-uint32_t Renderer::pack_3_into_1(uint8_t red, uint8_t green, uint8_t blue) {
-	//blue = 250;
-	//red = 0;
-	//green = 0;
-	return (red << 0) | (green << 8) | (blue << 16);
-}
+
 
 void Renderer::GLClearError()
 {
@@ -186,28 +181,16 @@ bool Renderer::myglfwWindowShouldClose() {
 	return glfwWindowShouldClose(window);
 }
 
-void Renderer::update(uint32_t* data) {
-	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(uint32_t), data, GL_DYNAMIC_DRAW));
+
+
+void Renderer::update(float* data) {
+	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(float), data, GL_DYNAMIC_DRAW));
 	glClear(GL_COLOR_BUFFER_BIT);
 	GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
 
-
-
-void Renderer::update(std::vector < std::vector<std::vector<uint8_t>>> &data) {
-	uint32_t* packed_data = new uint32_t[square_array_size];
-	for (int y = 0; y <y_squares; ++y)
-	{
-		for (int x = 0; x < x_squares; ++x) {
-			//std::vector<uint8_t> square_rgb = data[y][x];
-			packed_data[(y * x_squares) + x] = pack_3_into_1(data[y][x][0], data[y][x][1], data[y][x][2]);
-		}
-	}
-	update(packed_data);
-	delete packed_data;
-}
 
 
 

@@ -26,13 +26,12 @@ uint32_t t_pack_3_into_1(uint8_t red, uint8_t green, uint8_t blue) {
 
 int main(void)
 {
-	std::cout << "test_line" << std::endl;
-	int SCREEN_WIDTH = 600;
+	int SCREEN_WIDTH = 1000;
 	int SCREEN_HEIGHT = 400;
-	int square_length = 5;
+	int square_length = 1;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
-	int square_array_size = (x_squares * y_squares);
+	int square_array_size = (x_squares * y_squares)*3;
 	Renderer renderer(square_length, SCREEN_WIDTH, SCREEN_HEIGHT);
 	renderer.init();
 	srand(time(NULL));
@@ -40,20 +39,27 @@ int main(void)
 	int frameCount = 0;
 	double fps_gap = 2.0;
 
-	std::vector < std::vector<std::vector<uint8_t>>> data;
+	float* data = new float[square_array_size];
+	int square_index;
 	for (int y = 0; y < y_squares; y++) {
-		std::vector<std::vector<uint8_t>> temp_row;
 		for (int x = 0; x < x_squares; x++) {
-			std::vector<uint8_t> temp_rgb;
-			temp_rgb.push_back(rand() % 256);
-			temp_rgb.push_back(rand() % 256);
-			temp_rgb.push_back(rand() % 256);
-			temp_row.push_back(temp_rgb);
+			float hue = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 360));
+			float sat = 20+static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 80));
+			float light = 20+static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 80));
+			sat = 100;
+			light = 70;
+			square_index = (y * x_squares*3) + x*3;
+			hue = (y +x) % 360;
+			sat = fmod((hue / 2), 100);
+			light = 100 - sat;
+			//light=
+			data[(square_index)] = hue;
+			data[(square_index + 1)] = sat;
+			data[(square_index + 2)] = light;
 		}
-		data.push_back(temp_row);
-		temp_row.clear();
 	}
-	std::cout << "SIZE VECTOR: " << data[40].size() << std::endl;
+
+
 
 	//while (!glfwWindowShouldClose(window))
 	while (!renderer.myglfwWindowShouldClose())

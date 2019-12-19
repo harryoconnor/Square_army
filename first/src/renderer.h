@@ -14,6 +14,7 @@
 #include <thread>
 #include "renderer.h"
 #include <vector>
+#include <cmath>
 
 struct ShaderProgramSource
 {
@@ -71,15 +72,14 @@ public:
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 
-	void update(uint32_t* data);
 
-	void update(std::vector < std::vector<std::vector<uint8_t>>>&data);
+	void update(float* data);
+
 
 	bool myglfwWindowShouldClose();
 
 	void clean_up();
 
-	uint32_t pack_3_into_1(uint8_t red, uint8_t green, uint8_t blue);
 
 	void merge_shader_extension(std::string shader_file_name, std::string extension_file_name, std::string output_file_name);
 };
