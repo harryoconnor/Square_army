@@ -105,6 +105,7 @@ bool Renderer::GLLogCall(const char* function, const char* file, int line) {
 	while (GLenum error = glGetError()) {
 		std::cout << "[OpenGL Error] (" << error << "): " << function <<
 			" " << file << ":" << line << std::endl;
+		//std::cout << "error message:" << gluErrorString(error);
 		return false;
 	}
 	return true;
@@ -198,12 +199,12 @@ void Renderer::update(std::vector < std::vector<std::vector<uint8_t>>> &data) {
 	for (int y = 0; y <y_squares; ++y)
 	{
 		for (int x = 0; x < x_squares; ++x) {
-			std::vector<uint8_t> square_rgb = data[y][x];
-			packed_data[(y * x_squares) + x] = pack_3_into_1(square_rgb[0], square_rgb[1], square_rgb[2]);
+			//std::vector<uint8_t> square_rgb = data[y][x];
+			packed_data[(y * x_squares) + x] = pack_3_into_1(data[y][x][0], data[y][x][1], data[y][x][2]);
 		}
 	}
 	update(packed_data);
-
+	delete packed_data;
 }
 
 

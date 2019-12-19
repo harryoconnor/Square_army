@@ -26,9 +26,10 @@ uint32_t t_pack_3_into_1(uint8_t red, uint8_t green, uint8_t blue) {
 
 int main(void)
 {
-	int SCREEN_WIDTH = 1000;
-	int SCREEN_HEIGHT = 600;
-	int square_length = 10;
+	std::cout << "test_line" << std::endl;
+	int SCREEN_WIDTH = 1600;
+	int SCREEN_HEIGHT = 1000;
+	int square_length = 1;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
 	int square_array_size = (x_squares * y_squares);
