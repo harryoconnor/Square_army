@@ -80,6 +80,8 @@ public:
 	void clean_up();
 
 	uint32_t pack_3_into_1(uint8_t red, uint8_t green, uint8_t blue);
+
+	void merge_shader_extension(std::string shader_file_name, std::string extension_file_name, std::string output_file_name);
 };
 
 #endif

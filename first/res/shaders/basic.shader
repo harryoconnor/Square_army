@@ -36,7 +36,13 @@ void main()
 
 	vec4 color_min_alpha = unpackUnorm4x8(my_data.data_SSBO[square_index]);
 
-	color = vec4(color_min_alpha.x, color_min_alpha.y, color_min_alpha.z, 1.0f);
+	vec3 test = hsluvToRgb(100.0f, 50.0f, 50.0f);
+
+	color= vec4(test.x, test.y, test.z, 1.0f);
+
+
+	//color = vec4(color_min_alpha.x, color_min_alpha.y, color_min_alpha.z, 1.0f);
+
 
 
 };

@@ -61,7 +61,9 @@ bool Renderer::init() {
 	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(uint32_t), nullptr, GL_DYNAMIC_DRAW));
 	GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, ssbo));
 
-	source = ParseShader("res/shaders/basic.shader");
+	merge_shader_extension("res/shaders/basic.shader", "res/shaders/hsluv.shader", "res/shaders/final_shader.shader");
+
+	source = ParseShader("res/shaders/final_shader.shader");
 	std::cout << "VertexSource" << std::endl;
 	std::cout << source.VertexSource << std::endl;
 	std::cout << "FragmentSource" << std::endl;
@@ -212,4 +214,34 @@ void Renderer::update(std::vector < std::vector<std::vector<uint8_t>>> &data) {
 void Renderer::clean_up() {
 	glDeleteProgram(shader);
 	glfwTerminate();
+}
+
+
+void Renderer::merge_shader_extension(std::string shader_file_name, std::string extension_file_name, std::string output_file_name) {
+	std::ifstream in1(shader_file_name);
+	std::ifstream in2(extension_file_name);
+	std::ofstream out(output_file_name);
+	std::string line1;
+	std::string line2;
+	//std::cout << "HERE";
+	while (std::getline(in1, line1)) {
+		out << line1 << '\n';
+		//std::cout << line1 << "HERE" << std::endl;
+		if (line1.find("#shader fragment") != std::string::npos) {
+			std::getline(in1, line1);
+			out << line1 << '\n';
+			//std::cout << line1 << "HERE2" << std::endl;
+
+			while (std::getline(in2, line2)) {
+				out << line2 << '\n';
+				//std::cout << line2 << "HERE3!!!!" << std::endl;
+			}
+		}
+
+	}
+	in1.close();
+	in2.close();
+	out.close();
+
+
 }
