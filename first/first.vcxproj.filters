@@ -25,6 +25,7 @@
   <ItemGroup>
     <None Include="res\shaders\basic.shader" />
     <None Include="res\shaders\hsluv.shader" />
+    <None Include="res\shaders\final_shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\renderer.h">

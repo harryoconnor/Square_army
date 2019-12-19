@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\basic.shader" />
+    <None Include="res\shaders\final_shader.shader" />
     <None Include="res\shaders\hsluv.shader" />
   </ItemGroup>
   <ItemGroup>
