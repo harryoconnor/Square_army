@@ -132,7 +132,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\gen_random.cpp" />
     <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\square_army.cpp" />
+    <ClCompile Include="src\square_collection.cpp" />
+    <ClCompile Include="src\square_collection.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\basic.shader" />
@@ -140,7 +144,9 @@
     <None Include="res\shaders\hsluv.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\gen_random.h" />
     <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\square_army.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
