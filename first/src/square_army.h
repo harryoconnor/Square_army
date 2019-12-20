@@ -5,13 +5,13 @@
 #include <vector>
 #include "gen_random.h"
 #include <iostream>
-class SquareLink {
-};
+//class SquareLink {
+//};
 
 
 class SquareArmy {
 public:
-	std::vector<SquareLink> links;
+	//std::vector<SquareLink> links;
 
 	GenRand& gen_rand;
 
@@ -27,7 +27,7 @@ public:
 	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, GenRand& t_gen_rand);
 	//SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light);
 	void update();
-	void add_neighbor(SquareArmy* other_square);
+	//void add_neighbor(SquareArmy* other_square);
 
 };
 

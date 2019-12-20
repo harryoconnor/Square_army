@@ -15,6 +15,9 @@ public:
 	std::vector<SquareArmy> squares;
 	GenRand *gen_rand=new GenRand();
 	void update();
+
+	//SquareThread(const SquareThread& old_obj);
+	//SquareThread& operator = (const SquareThread& old_obj);
 	//~SquareThread();
 };
 

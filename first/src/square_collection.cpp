@@ -80,7 +80,18 @@ void SquareThread::update() {
 	}
 }
 
+/*
+SquareThread::SquareThread(const SquareThread& old_obj) {
+	squares = old_obj.squares;
+	GenRand* gen_rand = new GenRand();
+}
 
-//SquareThread::~SquareThread() {
-	//delete gen_rand;
-//}
+SquareThread& SquareThread::operator = (const SquareThread& old_obj) {
+	squares = old_obj.squares;
+	GenRand* gen_rand = new GenRand();
+}
+
+SquareThread::~SquareThread() {
+	delete gen_rand;
+}
+*/
