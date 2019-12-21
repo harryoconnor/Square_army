@@ -13,7 +13,7 @@ class SquareArmy {
 public:
 	//std::vector<SquareLink> links;
 
-	GenRand& gen_rand;
+	GenRand* gen_rand;
 
 	int x;
 	int y;
@@ -24,10 +24,14 @@ public:
 
 	float hue_change;
 public:
-	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, GenRand& t_gen_rand);
+	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, GenRand* t_gen_rand);
 	//SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light);
 	void update();
+
+	void update_gen_rand(GenRand* t_gen_rand);
 	//void add_neighbor(SquareArmy* other_square);
+
+	SquareArmy& operator = (const SquareArmy& old_obj);
 
 };
 

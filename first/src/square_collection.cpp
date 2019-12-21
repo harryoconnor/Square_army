@@ -34,6 +34,7 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 SquareThread::SquareThread(int square_index_start, int square_index_end, int x_squares, float* data)//end exclusive
 {
 	//std::cout <<"thread rand:"<< gen_rand->getStandardUniform_100() << std::endl;;
+	gen_rand = new GenRand();
 	int min_y = square_index_start / x_squares;
 	int max_y = (square_index_end-1) /x_squares;
 	int starting_x = square_index_start % x_squares;
@@ -54,7 +55,7 @@ SquareThread::SquareThread(int square_index_start, int square_index_end, int x_s
 			//if (data_index + 2 => 18000) {
 				//__debugbreak();
 			//}
-			SquareArmy temp_square_army(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], *gen_rand);
+			SquareArmy temp_square_army(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand);
 			//squares.push_back(SquareArmy(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand));
 			squares.push_back(temp_square_army);
 		}
@@ -80,18 +81,24 @@ void SquareThread::update() {
 	}
 }
 
-/*
-SquareThread::SquareThread(const SquareThread& old_obj) {
-	squares = old_obj.squares;
+
+SquareThread::SquareThread(const SquareThread& old_obj){
 	GenRand* gen_rand = new GenRand();
+	squares = old_obj.squares;
+	for (auto it = squares.begin(); it != squares.end(); ++it) {
+		it->update_gen_rand(gen_rand);
+	}
 }
 
 SquareThread& SquareThread::operator = (const SquareThread& old_obj) {
-	squares = old_obj.squares;
 	GenRand* gen_rand = new GenRand();
+	squares = old_obj.squares;
+	for (auto it = squares.begin(); it != squares.end(); ++it) {
+		it->update_gen_rand(gen_rand);
+	}
+	return *this;
 }
 
 SquareThread::~SquareThread() {
 	delete gen_rand;
 }
-*/

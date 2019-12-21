@@ -13,12 +13,14 @@ class SquareThread {
 public:
 	SquareThread(int square_index_start, int square_index_end, int x_squares, float* data);
 	std::vector<SquareArmy> squares;
-	GenRand *gen_rand=new GenRand();
+	//GenRand *gen_rand=new GenRand();
+	GenRand* gen_rand = nullptr;
 	void update();
-
-	//SquareThread(const SquareThread& old_obj);
-	//SquareThread& operator = (const SquareThread& old_obj);
-	//~SquareThread();
+	
+	SquareThread(const SquareThread& old_obj);
+	SquareThread& operator = (const SquareThread& old_obj);
+	~SquareThread();
+	
 };
 
 
