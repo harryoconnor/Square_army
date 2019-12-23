@@ -26,6 +26,8 @@ struct ShaderProgramSource
 class Renderer
 {
 private:
+
+
 	int square_size;
 	int SCREEN_WIDTH;
 	int SCREEN_HEIGHT;
@@ -61,6 +63,13 @@ private:
 	int square_y_squares_location;
 
 public:
+	int update_count = 0;
+	double BufferData_time = 0;
+	double glClear_time = 0;
+	double glDrawElements_time = 0;
+	double glfwSwapBuffers_time = 0;
+	double glfwPollEvents_time = 0;
+
 	Renderer(int t_square_size, int t_SCREEN_WIDTH, int t_SCREEN_HEIGHT);
 
 	bool init();

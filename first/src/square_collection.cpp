@@ -2,11 +2,11 @@
 #include "square_collection.h"
 
 SquareCollection::SquareCollection(int screen_width, int screen_height, int square_length, float* data, int thread_count){
-	int x_squares = screen_width / square_length;
-	int y_squares = screen_height / square_length;
+	x_squares = screen_width / square_length;
+	y_squares = screen_height / square_length;
 	int data_array_size = (x_squares * y_squares) * 3;
 	int square_array_size = data_array_size / 3;
-	
+	squares_per_thread = square_array_size / thread_count;
 
 	int squares_per_thread = square_array_size / thread_count;
 	int extra_squares = square_array_size % thread_count;
@@ -81,6 +81,24 @@ void SquareThread::update() {
 	}
 }
 
+SquareArmy& SquareCollection::get_square_army(int x, int y) {
+	return get_square_army((y * x_squares) + x);
+}
+
+SquareArmy& SquareCollection::get_square_army(int index) {
+	int thread = index / squares_per_thread;
+	int local_index= index % squares_per_thread;
+	return square_threads[thread].get_square_army(local_index);
+}
+
+SquareArmy& SquareThread::get_square_army(int local_index) {
+	return squares[local_index];
+}
+
+
+
+
+
 
 SquareThread::SquareThread(const SquareThread& old_obj){
 	GenRand* gen_rand = new GenRand();
@@ -102,3 +120,6 @@ SquareThread& SquareThread::operator = (const SquareThread& old_obj) {
 SquareThread::~SquareThread() {
 	delete gen_rand;
 }
+
+
+

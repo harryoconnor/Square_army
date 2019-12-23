@@ -184,11 +184,34 @@ bool Renderer::myglfwWindowShouldClose() {
 
 
 void Renderer::update(float* data) {
+	update_count++;
+
+	double currentTime = glfwGetTime();
+
 	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(float), data, GL_DYNAMIC_DRAW));
+	double after_call_time = glfwGetTime();
+	BufferData_time += (after_call_time - currentTime);
+	currentTime = glfwGetTime();
+
 	glClear(GL_COLOR_BUFFER_BIT);
+	after_call_time = glfwGetTime();
+	glClear_time = (after_call_time - currentTime);
+	currentTime = glfwGetTime();
+
 	GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+	after_call_time = glfwGetTime();
+	glDrawElements_time += (after_call_time - currentTime);
+	currentTime = glfwGetTime();
+
 	glfwSwapBuffers(window);
+	after_call_time = glfwGetTime();
+	glfwSwapBuffers_time += (after_call_time - currentTime);
+	currentTime = glfwGetTime();
+
 	glfwPollEvents();
+	after_call_time = glfwGetTime();
+	glfwPollEvents_time += (after_call_time - currentTime);
+
 }
 
 
