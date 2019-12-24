@@ -28,6 +28,8 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 		//std::cout << "after thread make" << std::endl;
 		square_index_start= square_index_end;
 	}
+	add_links();
+
 }
 
 
@@ -55,14 +57,44 @@ SquareThread::SquareThread(int square_index_start, int square_index_end, int x_s
 			//if (data_index + 2 => 18000) {
 				//__debugbreak();
 			//}
-			SquareArmy temp_square_army(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand);
+			//SquareArmy temp_square_army(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand);
+			std::shared_ptr<SquareArmy> temp_square_army = std::make_shared<SquareArmy>(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand);
 			//squares.push_back(SquareArmy(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand));
 			squares.push_back(temp_square_army);
 		}
 	}
 	//std::cout << "data_index:" << data_index << std::endl;
-
 }
+
+void SquareCollection::add_link(std::shared_ptr<SquareArmy> square1, std::shared_ptr<SquareArmy> square2) {
+	std::shared_ptr<Link> link_1_to_2 = square1->make_link(square2);
+	std::shared_ptr<Link> link_2_to_1 = square2->make_link(square1);
+	link_1_to_2->other_link = link_2_to_1;
+	link_2_to_1->other_link = link_1_to_2;
+}
+
+
+void SquareCollection::add_links() {
+	for (int y = 0; y < y_squares; y++) {
+		for (int x = 0; x < x_squares; x++) {
+			if (y > 0) {
+				add_link(get_square_army(x, y), get_square_army(x, y - 1));
+				if (x > 0) {
+					add_link(get_square_army(x, y), get_square_army(x - 1, y - 1));
+				}
+				if (x < (x_squares - 1)) {
+					add_link(get_square_army(x, y), get_square_army(x + 1, y - 1));
+
+				}
+			}
+			if (x > 0) {
+				add_link(get_square_army(x, y), get_square_army(x - 1, y));
+			}
+		}
+	}
+}
+
+
 
 void SquareCollection::update() {
 	std::vector<std::future<void>> promise_list;
@@ -75,23 +107,25 @@ void SquareCollection::update() {
 	promise_list.clear();
 }
 
+
+
 void SquareThread::update() {
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
-		it->update();
+		(*it)->update();
 	}
 }
 
-SquareArmy& SquareCollection::get_square_army(int x, int y) {
+std::shared_ptr<SquareArmy> SquareCollection::get_square_army(int x, int y) {
 	return get_square_army((y * x_squares) + x);
 }
 
-SquareArmy& SquareCollection::get_square_army(int index) {
+std::shared_ptr<SquareArmy> SquareCollection::get_square_army(int index) {
 	int thread = index / squares_per_thread;
 	int local_index= index % squares_per_thread;
 	return square_threads[thread].get_square_army(local_index);
 }
 
-SquareArmy& SquareThread::get_square_army(int local_index) {
+std::shared_ptr<SquareArmy> SquareThread::get_square_army(int local_index) {
 	return squares[local_index];
 }
 
@@ -104,7 +138,7 @@ SquareThread::SquareThread(const SquareThread& old_obj){
 	GenRand* gen_rand = new GenRand();
 	squares = old_obj.squares;
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
-		it->update_gen_rand(gen_rand);
+		(*it)->update_gen_rand(gen_rand);
 	}
 }
 
@@ -112,7 +146,7 @@ SquareThread& SquareThread::operator = (const SquareThread& old_obj) {
 	GenRand* gen_rand = new GenRand();
 	squares = old_obj.squares;
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
-		it->update_gen_rand(gen_rand);
+		(*it)->update_gen_rand(gen_rand);
 	}
 	return *this;
 }
@@ -120,6 +154,7 @@ SquareThread& SquareThread::operator = (const SquareThread& old_obj) {
 SquareThread::~SquareThread() {
 	delete gen_rand;
 }
+
 
 
 

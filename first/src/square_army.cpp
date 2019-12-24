@@ -16,15 +16,19 @@ SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_li
 
 void SquareArmy::update() {
 	//std::cout<< "square rand:"<< gen_rand.getStandardUniform_100()<<std::endl;
-	hue_change = (2.5-gen_rand->getStandardUniform_100() / 20)*3;
+	hue_change = 0;
+	hue_change += (2.5-gen_rand->getStandardUniform_100() / 20)*3;
 	//hue_change = 1;
 	//float light_change = -0.1f;
 	//light += light_change;
 	//for (int i = 0; i < 1000; i++) {
 		//hue_change+= gen_rand.getStandardUniform_100() / 300;
 	// }
-	if (hue_change > 100 || hue_change < -100) {
-		__debugbreak();
+	//if (hue_change > 100 || hue_change < -100) {
+		//__debugbreak();
+	//}
+	for (auto it = links.begin(); it != links.end(); ++it) {
+		hue_change += (*it)->hue_change;
 	}
 	hue += hue_change;
 }
@@ -44,3 +48,12 @@ SquareArmy& SquareArmy::operator = (const SquareArmy& old_obj) {
 	return *this;
 }
 
+
+
+Link::Link(std::shared_ptr<SquareArmy > t_square_army_link):square_army_link(t_square_army_link){}
+
+std::shared_ptr<Link> SquareArmy::make_link(std::shared_ptr<SquareArmy> square_army) {
+	std::shared_ptr<Link> link = std::make_shared<Link>(square_army);
+	links.push_back(link);
+	return link;
+}

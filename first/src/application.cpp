@@ -13,6 +13,7 @@
 #include "square_army.h"
 #include <future>
 #include "square_collection.h"
+#include <memory>
 
 
 
@@ -44,8 +45,8 @@ int main(void)
 
 	SquareCollection test(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, nthreads);
 	memcpy(read_data, write_data, data_array_size * sizeof(float));
-	//SquareArmy& bob2 = test.get_square_army(9, 5);
-	//bob2.light = 0;
+	std::shared_ptr<SquareArmy> bob2 = test.get_square_army(9, 5);
+	bob2->light = 0;
 
 	//float* data = new float[square_array_size];
 	//int square_index;
