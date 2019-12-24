@@ -35,6 +35,8 @@ private:
 	int y_squares;
 	int square_array_size;
 
+	//void* buffptr; faster without?
+
 	GLFWwindow* window;
 
 	float positions[8] = {

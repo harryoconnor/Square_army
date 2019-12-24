@@ -89,6 +89,8 @@ bool Renderer::init() {
 	//std::cout << "GL_MAX_UNIFORM_BLOCK_SIZE: " << GL_MAX_UNIFORM_BLOCK_SIZE << std::endl;
 	//std::cout << "GL_MAX_FRAGMENT_UNIFORM_BLOCKS: " << max_block_number << std::endl;
 
+	//buffptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY); //faster without?
+
 }
 
 
@@ -187,10 +189,14 @@ void Renderer::update(float* data) {
 	update_count++;
 
 	double currentTime = glfwGetTime();
-
 	GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, square_array_size * sizeof(float), data, GL_DYNAMIC_DRAW));
+	//void* buffptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+	//std::memcpy(data, buffptr, square_array_size * sizeof(float));
+	//std::memcpy( buffptr, data, square_array_size * sizeof(float));
+
 	double after_call_time = glfwGetTime();
 	BufferData_time += (after_call_time - currentTime);
+
 	currentTime = glfwGetTime();
 
 	glClear(GL_COLOR_BUFFER_BIT);

@@ -16,7 +16,7 @@ SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_li
 
 void SquareArmy::update() {
 	//std::cout<< "square rand:"<< gen_rand.getStandardUniform_100()<<std::endl;
-	hue_change = (2.5-gen_rand->getStandardUniform_100() / 20);
+	hue_change = (2.5-gen_rand->getStandardUniform_100() / 20)*3;
 	//hue_change = 1;
 	//float light_change = -0.1f;
 	//light += light_change;
