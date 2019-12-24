@@ -18,6 +18,8 @@ public:
 	//GenRand *gen_rand=new GenRand();
 	GenRand* gen_rand = nullptr;
 	void update();
+	void update_links();
+	void update_squares();
 
 	std::shared_ptr<SquareArmy> get_square_army(int local_index);
 	
@@ -37,6 +39,8 @@ public:
 	int squares_per_thread=0;
 	std::vector<SquareThread> square_threads;
 	void update();
+	void update_links();
+	void update_squares();
 
 	std::shared_ptr<SquareArmy> get_square_army(int index);
 	std::shared_ptr<SquareArmy> get_square_army(int x, int y);  // use y*x_squares + x 

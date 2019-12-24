@@ -5,6 +5,7 @@
 #include <vector>
 #include "gen_random.h"
 #include <iostream>
+#include  <math.h>
 //class SquareLink {
 //};
 
@@ -15,7 +16,7 @@ public:
 	Link(std::shared_ptr<SquareArmy > square_army_link);  //add other_link after creation in Square Collection
 	std::shared_ptr<SquareArmy > square_army_link=nullptr;
 	std::shared_ptr<Link > other_link=nullptr;
-	float hue_change = 0.1;
+	float hue_change = 0;
 
 };
 

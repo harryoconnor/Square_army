@@ -30,7 +30,7 @@ int main(void)
 	srand(time(NULL));
 	int SCREEN_WIDTH = 1000;
 	int SCREEN_HEIGHT = 600;
-	int square_length = 10;
+	int square_length = 4;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
 	int data_array_size = (x_squares * y_squares)*3;

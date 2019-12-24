@@ -94,8 +94,29 @@ void SquareCollection::add_links() {
 	}
 }
 
+void SquareCollection::update_links() {
+	std::vector<std::future<void>> promise_list;
+	for (auto it = square_threads.begin(); it != square_threads.end(); ++it) {
+		promise_list.push_back(std::async(std::launch::async, &SquareThread::update_links, &(*it)));
+	}
+	for (auto it = promise_list.begin(); it != promise_list.end(); ++it) {
+		it->wait();
+	}
+	promise_list.clear();
+}
 
+void SquareCollection::update_squares() {
+	std::vector<std::future<void>> promise_list;
+	for (auto it = square_threads.begin(); it != square_threads.end(); ++it) {
+		promise_list.push_back(std::async(std::launch::async, &SquareThread::update_squares, &(*it)));
+	}
+	for (auto it = promise_list.begin(); it != promise_list.end(); ++it) {
+		it->wait();
+	}
+	promise_list.clear();
+}
 
+/*
 void SquareCollection::update() {
 	std::vector<std::future<void>> promise_list;
 	for (auto it = square_threads.begin(); it != square_threads.end(); ++it) {
@@ -106,12 +127,28 @@ void SquareCollection::update() {
 	}
 	promise_list.clear();
 }
+*/
 
-
+void SquareCollection::update() {
+	update_links();
+	update_squares();
+}
 
 void SquareThread::update() {
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
 		(*it)->update();
+	}
+}
+
+void SquareThread::update_links() {
+	for (auto it = squares.begin(); it != squares.end(); ++it) {
+		(*it)->update_links();
+	}
+}
+
+void SquareThread::update_squares() {
+	for (auto it = squares.begin(); it != squares.end(); ++it) {
+		(*it)->update_squares();
 	}
 }
 
