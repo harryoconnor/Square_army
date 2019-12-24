@@ -7,13 +7,24 @@ SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_li
 	//sat = gen_rand.getStandardUniform_100();
 	//light = gen_rand.getStandardUniform_100();
 	light = 50;
-	if (x<100)
-		hue = 0;
-	else
-		hue = 180;
+	/*
+	if (x < 100) {
+		if (y < 60)
+			hue = 0;
+		else
+			hue = 90;
+	}else {
+		if (y < 60)
+			hue = 180;
+		else
+			hue = 270;
+	}
+	*/
+	hue = gen_rand->getStandardUniform_360();
+	//hue = 0;
 	sat = 50;
 }
-
+/*
 void SquareArmy::update() {
 	//std::cout<< "square rand:"<< gen_rand.getStandardUniform_100()<<std::endl;
 	hue_change = 0;
@@ -32,13 +43,15 @@ void SquareArmy::update() {
 	}
 	hue += hue_change;
 }
+*/
 
 void SquareArmy::update_links() {
 	for (auto link_point_it = links.begin(); link_point_it != links.end(); ++link_point_it) {
 		//(*link_point_it)->hue_change = 0.1;
-		float hue_dif((((*link_point_it)->square_army_link)->hue) - hue);
-		if (fabsf(hue_dif) < 20) {
-			(*link_point_it)->hue_change = ((((*link_point_it)->square_army_link)->hue) - hue) / 50;
+		float hue_dif = hue_distance(hue, (((*link_point_it)->square_army_link)->hue));
+		//float hue_dif((((*link_point_it)->square_army_link)->hue) - hue);
+		if (fabsf(hue_dif) < 40) {
+			(*link_point_it)->hue_change = hue_dif / 10;
 		}
 		//(*link_point_it)->hue_change = ((((*link_point_it)->square_army_link)->hue) - hue) / 500;
 
@@ -51,7 +64,7 @@ void SquareArmy::update_squares() {
 	for (auto it = links.begin(); it != links.end(); ++it) {
 		hue_change += (*it)->hue_change;
 	}
-	hue += hue_change;
+	hue = add_hues(hue, hue_change);
 }
 
 

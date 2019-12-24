@@ -134,11 +134,13 @@ void SquareCollection::update() {
 	update_squares();
 }
 
+/*
 void SquareThread::update() {
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
 		(*it)->update();
 	}
 }
+*/
 
 void SquareThread::update_links() {
 	for (auto it = squares.begin(); it != squares.end(); ++it) {

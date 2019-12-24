@@ -6,6 +6,7 @@
 #include "gen_random.h"
 #include <iostream>
 #include  <math.h>
+#include "color_utils.h"
 //class SquareLink {
 //};
 
@@ -40,7 +41,7 @@ public:
 public:
 	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, GenRand* t_gen_rand);
 	//SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light);
-	void update();
+	//void update();
 
 	void update_links();
 	void update_squares();

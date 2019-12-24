@@ -17,7 +17,7 @@ public:
 	std::vector<std::shared_ptr<SquareArmy>> squares;
 	//GenRand *gen_rand=new GenRand();
 	GenRand* gen_rand = nullptr;
-	void update();
+	//void update();
 	void update_links();
 	void update_squares();
 
