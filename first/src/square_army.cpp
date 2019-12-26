@@ -22,7 +22,8 @@ SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_li
 	*/
 	hue = gen_rand->getStandardUniform_360();
 	//hue = 0;
-	sat = 50;
+	sat = 70;
+	//sat= gen_rand->getStandardUniform_100()/2+50;
 }
 /*
 void SquareArmy::update() {
@@ -50,7 +51,7 @@ void SquareArmy::update_links() {
 		//(*link_point_it)->hue_change = 0.1;
 		float hue_dif = hue_distance(hue, (((*link_point_it)->square_army_link)->hue));
 		//float hue_dif((((*link_point_it)->square_army_link)->hue) - hue);
-		if (fabsf(hue_dif) < 40) {
+		if (fabsf(hue_dif) < 50) {
 			(*link_point_it)->hue_change = hue_dif / 10;
 		}
 		//(*link_point_it)->hue_change = ((((*link_point_it)->square_army_link)->hue) - hue) / 500;

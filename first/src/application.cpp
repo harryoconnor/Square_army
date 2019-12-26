@@ -26,11 +26,11 @@ int main(void)
 	
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	std::cout << "thread count:" << nthreads<< std::endl; 
-	//nthreads = 1;
+	//nthreads = 1000;
 	srand(time(NULL));
 	int SCREEN_WIDTH = 1000;
 	int SCREEN_HEIGHT = 600;
-	int square_length = 4;
+	int square_length = 2;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
 	int data_array_size = (x_squares * y_squares)*3;
