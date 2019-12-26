@@ -14,18 +14,18 @@ class SquareThread {
 public:
 	SquareThread(int square_index_start, int square_index_end, int x_squares, float* data);
 	//std::vector<SquareArmy> squares;
-	std::vector<std::shared_ptr<SquareArmy>> squares;
+	std::vector<SquareArmy> squares;
 	//GenRand *gen_rand=new GenRand();
-	GenRand* gen_rand = nullptr;
+	GenRand gen_rand;
 	// void update();
 	void update_links();
 	void update_squares();
 
-	std::shared_ptr<SquareArmy> get_square_army(int local_index);
+	SquareArmy& get_square_army(int local_index);
 	
-	SquareThread(const SquareThread& old_obj);
-	SquareThread& operator = (const SquareThread& old_obj);
-	~SquareThread();
+	//SquareThread(const SquareThread& old_obj);
+	//SquareThread& operator = (const SquareThread& old_obj);
+	//~SquareThread();
 	
 };
 
@@ -42,12 +42,12 @@ public:
 	void update_links();
 	void update_squares();
 
-	std::shared_ptr<SquareArmy> get_square_army(int index);
-	std::shared_ptr<SquareArmy> get_square_army(int x, int y);  // use y*x_squares + x 
+	SquareArmy& get_square_army(int index);
+	SquareArmy& get_square_army(int x, int y);  // use y*x_squares + x 
 
 	void add_links();
 
-	void add_link(std::shared_ptr<SquareArmy> square1, std::shared_ptr<SquareArmy> square2);
+	void add_link(SquareArmy& square1, SquareArmy& square2);
 };
 
 #endif
