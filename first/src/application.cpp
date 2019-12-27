@@ -26,9 +26,9 @@ int main(void)
 	std::cout << "thread count:" << nthreads<< std::endl; 
 	//nthreads = 1000;
 	srand(time(NULL));
-	int SCREEN_WIDTH = 1800;
-	int SCREEN_HEIGHT = 1000;
-	int square_length = 2;
+	int SCREEN_WIDTH = 1000;
+	int SCREEN_HEIGHT = 600;
+	int square_length = 10;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
 	int data_array_size = (x_squares * y_squares)*3;
@@ -41,32 +41,13 @@ int main(void)
 	float* write_data = new float[data_array_size];
 	float* read_data = new float[data_array_size];
 
-	SquareCollection test(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, nthreads);
+	SquareCollection all_squares(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, nthreads);
 	memcpy(read_data, write_data, data_array_size * sizeof(float));
-	//std::shared_ptr<SquareArmy> bob2 = test.get_square_army(9, 5);
-	//bob2->light = 0;
+	//SquareArmy bob2 = all_squares.get_square_army(9, 5);
+	//bob2.light = 0;
 
-	//float* data = new float[square_array_size];
-	//int square_index;
-	//std::vector<SquareArmy> square_armies;
-	//for (int y = 0; y < y_squares; y++) {
-		//for (int x = 0; x < x_squares; x++) {
-			//square_index = (y * x_squares*3) + x*3;
-			//square_armies.push_back(SquareArmy(x, y, data[(square_index)], data[(square_index + 1)], data[(square_index + 2)]));
-			//data[(square_index)] = hue;
-			//data[(square_index + 1)] = sat;
-			//data[(square_index + 2)] = light;
-		//}
-	//}
-
-
-
-	//while (!glfwWindowShouldClose(window))
+	
 	int count = 0;
-	double before_time=0;
-	double time_after_call=0;
-	double total_render_time=0;
-	double total_calc_time=0;
 	std::future<void> renderer_promise;
 	std::future<void> calc_promise;
 	while (!renderer.myglfwWindowShouldClose())
@@ -81,41 +62,17 @@ int main(void)
 			frameCount = 0;
 			previousTime = currentTime;
 		}
-		//std::vector<std::future<void>> promise_list;
-		//for (auto it = square_armies.begin(); it != square_armies.end(); ++it) {
-			//it->update();#
-			//promise_list.push_back(std::async(std::launch::async, &SquareArmy::update, &(*it)));
-		//}
-		//for (auto it = promise_list.begin(); it != promise_list.end(); ++it) {
-			//it->wait();
-		//}
-		//promise_list.clear();
-		//square_armies[5999].light = 0;
-		//count++; 
-		//before_time = glfwGetTime();
+		
+		calc_promise = std::async(std::launch::async, &SquareCollection::update, &all_squares);
 
-		//test.update();
-		calc_promise = std::async(std::launch::async, &SquareCollection::update, &test);
-		//calc_promise.get();
-		//time_after_call= glfwGetTime();
-		//total_calc_time += (time_after_call - before_time);
-		//before_time = glfwGetTime();
-		//renderer_promise = std::async(std::launch::async, &Renderer::update, &renderer, read_data);
 		renderer.update(read_data);
 		calc_promise.get();
-		//calc_promise.get();
-		//renderer_promise.get();
 
 		memcpy(read_data, write_data, data_array_size * sizeof(float));
-		//renderer.update(read_data);
-		//time_after_call = glfwGetTime();
-		//total_render_time += (time_after_call - before_time);
-		
+
 		//std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 	
-	std::cout << "total_calc_time:" << 1000000 * total_calc_time / count << std::endl;
-	std::cout << "total_render_time:" << 1000000 * total_render_time / count << std::endl << std::endl << std::endl;
 
 	std::cout << "BufferData_time micro:" <<1000000* renderer.BufferData_time / renderer.update_count << std::endl;
 	std::cout << "glClear_time micro:" << 1000000 * renderer.glClear_time / renderer.update_count << std::endl;

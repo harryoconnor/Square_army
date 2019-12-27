@@ -7,11 +7,9 @@ class GenRand
 {
 public:
 	std::minstd_rand e2;
-	//std::uniform_real_distribution<double>standard_unif;
 	std::uniform_real_distribution<float>standard_unif_100;
 	std::uniform_real_distribution<float>standard_unif_360;
 
-	//std::random_device dev;
 	GenRand(int seed);
 	GenRand();
 	float getStandardUniform_100();
