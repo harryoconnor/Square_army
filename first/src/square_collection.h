@@ -12,6 +12,8 @@
 
 class SquareThread {
 public:
+	SquareThread(const SquareThread&);
+public:
 	SquareThread(int square_index_start, int square_index_end, int x_squares, float* data);
 	//std::vector<SquareArmy> squares;
 	std::vector<SquareArmy> squares;
@@ -20,6 +22,7 @@ public:
 	// void update();
 	void update_links();
 	void update_squares();
+	int squares_in_thread = 0;
 
 	SquareArmy& get_square_army(int local_index);
 	
@@ -32,11 +35,14 @@ public:
 
 
 class SquareCollection {
+private:
+	SquareCollection(const SquareCollection&);
 public:
 	SquareCollection(int screen_width, int screen_height, int square_length, float* data, int thread_count);
 	int x_squares=0;
 	int y_squares=0;
-	int squares_per_thread=0;
+	int average_squares_per_thread=0;
+	int extra_thread_squares = 0;
 	std::vector<SquareThread> square_threads;
 	void update();
 	void update_links();

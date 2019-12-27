@@ -17,8 +17,6 @@
 
 
 
-#define TIME_TEST
-
 
 int main(void)
 {
@@ -28,9 +26,9 @@ int main(void)
 	std::cout << "thread count:" << nthreads<< std::endl; 
 	//nthreads = 1000;
 	srand(time(NULL));
-	int SCREEN_WIDTH = 1000;
-	int SCREEN_HEIGHT = 600;
-	int square_length = 1;
+	int SCREEN_WIDTH = 1800;
+	int SCREEN_HEIGHT = 1000;
+	int square_length = 2;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
 	int data_array_size = (x_squares * y_squares)*3;
@@ -78,7 +76,6 @@ int main(void)
 		if (currentTime - previousTime >= fps_gap)
 		{
 			double fps = frameCount / fps_gap;
-			// Display the frame count here any way you want.
 			std::cout << fps << std::endl;
 
 			frameCount = 0;

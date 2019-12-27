@@ -3,6 +3,7 @@
 SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, GenRand& t_gen_rand)
 	:x(t_x), y(t_y), hue(t_hue), sat(t_sat), light(t_light), gen_rand(t_gen_rand), hue_change(0.0f)
 {
+	links.reserve(8);
 	//hue = gen_rand.getStandardUniform_360();
 	//sat = gen_rand.getStandardUniform_100();
 	//light = gen_rand.getStandardUniform_100();
@@ -22,7 +23,7 @@ SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_li
 	*/
 	hue = gen_rand.getStandardUniform_360();
 	//hue = 0;
-	sat = 70;
+	sat = 80;
 	//sat= gen_rand->getStandardUniform_100()/2+50;
 }
 /*
@@ -47,12 +48,12 @@ void SquareArmy::update() {
 */
 
 void SquareArmy::update_links() {
-	for (auto link_point_it = links.begin(); link_point_it != links.end(); ++link_point_it) {
+	for (auto link = links.begin(); link != links.end(); ++link) {
 		//(*link_point_it)->hue_change = 0.1;
-		float hue_dif = hue_distance(hue, ((link_point_it->square_army_link).hue));
+		float hue_dif = hue_distance(hue, ((link->square_army_link).hue));
 		//float hue_dif((((*link_point_it)->square_army_link)->hue) - hue);
 		if (fabsf(hue_dif) < 50) {
-			link_point_it->hue_change = hue_dif / 10;
+			link->hue_change = hue_dif / 10;
 		}
 		//(*link_point_it)->hue_change = ((((*link_point_it)->square_army_link)->hue) - hue) / 500;
 
@@ -61,11 +62,35 @@ void SquareArmy::update_links() {
 
 void SquareArmy::update_squares() {
 	hue_change = 0;
-	hue_change += (2.5 - gen_rand.getStandardUniform_100() / 20) * 5;
+	//hue_change += (2.5 - gen_rand.getStandardUniform_100() / 20) * 5;
 	for (auto it = links.begin(); it != links.end(); ++it) {
 		hue_change += it->hue_change;
 	}
 	hue = add_hues(hue, hue_change);
+}
+
+void SquareArmy::update_links_wave() {
+	for (auto link = links.begin(); link != links.end(); ++link) {
+
+		float hue_dif = hue_distance(hue, ((link->square_army_link).hue));
+
+		link->hue_change = hue_dif;
+
+	}
+}
+
+void SquareArmy::update_squares_wave() {
+	hue_change = 0;
+	float hue_sum = 0;
+	//hue_change += (2.5 - gen_rand.getStandardUniform_100() / 10);
+	for (auto it = links.begin(); it != links.end(); ++it) {
+		hue_sum += it->hue_change;
+	}
+	hue_acceleration = hue_sum / 400+ gen_rand.getStandardUniform_100()/10000;
+	hue_velocity += hue_acceleration;
+	hue_change = hue_velocity;
+	hue = add_hues(hue, hue_change);
+	hue_velocity *= 0.995;
 }
 
 /*
@@ -87,10 +112,22 @@ SquareArmy& SquareArmy::operator = (const SquareArmy& old_obj) {
 */
 
 
-Link::Link(SquareArmy& t_square_army_link):square_army_link(t_square_army_link){}
+Link::Link(SquareArmy& t_square_army_link):square_army_link(t_square_army_link){
+	//std::vector<float> test;
+	//for (int i = 0; i < 10; i++) {
+		//test.push_back(5.4f);
+	//}
+	//}
+}
 
-Link& SquareArmy::make_link(SquareArmy& square_army) {
-	Link link(square_army);
-	links.push_back(link);
-	return link;
+void SquareArmy::make_link(SquareArmy& square_army) {
+	//Link link(square_army);
+	links.emplace_back(square_army);
+	//links.push_back(link);
+	//return link;
+}
+
+
+Link::Link(const Link& other): square_army_link(other.square_army_link) {
+	std::cout << "dont copy link"<<std::endl;
 }

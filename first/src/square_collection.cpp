@@ -6,10 +6,10 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 	y_squares = screen_height / square_length;
 	int square_array_size = (x_squares * y_squares);
 	int data_array_size = square_array_size * 3;
-	squares_per_thread = square_array_size / thread_count;
+	average_squares_per_thread = square_array_size / thread_count;
 
-	int squares_per_thread = square_array_size / thread_count;
-	int extra_squares = square_array_size % thread_count;
+	//int squares_per_thread = square_array_size / thread_count;
+	extra_thread_squares = square_array_size % thread_count;
 
 	int square_index_start=0;
 	int square_index_end = 0;
@@ -17,8 +17,8 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 	square_threads.reserve(thread_count);
 
 	for (int i = 0; i < thread_count; i++) {
-		int real_thread_size= squares_per_thread;
-		if (i < extra_squares) {
+		int real_thread_size= average_squares_per_thread;
+		if (i < extra_thread_squares) {
 			real_thread_size++;
 		}
 		square_index_end = square_index_start+real_thread_size;
@@ -45,9 +45,9 @@ SquareThread::SquareThread(int square_index_start, int square_index_end, int x_s
 	int max_y = (square_index_end-1) /x_squares;
 	int starting_x = square_index_start % x_squares;
 	int ending_x= (square_index_end-1) % x_squares;
-	int squares_per_thread = square_index_end - square_index_start;
+	squares_in_thread  = square_index_end - square_index_start;
 	
-	squares.reserve(squares_per_thread);
+	squares.reserve(squares_in_thread);
 
 	int data_index=0;
 	int square_index=0;
@@ -75,16 +75,19 @@ SquareThread::SquareThread(int square_index_start, int square_index_end, int x_s
 }
 
 void SquareCollection::add_link(SquareArmy& square1, SquareArmy& square2) {
-	Link& link_1_to_2 = square1.make_link(square2);
-	Link& link_2_to_1 = square2.make_link(square1);
-	link_1_to_2.other_link = &link_2_to_1;
-	link_2_to_1.other_link = &link_1_to_2;
+	square1.make_link(square2);
+	square2.make_link(square1);
+	//link_1_to_2.other_link = &link_2_to_1;
+	//link_2_to_1.other_link = &link_1_to_2;
 }
 
 
 void SquareCollection::add_links() {
 	for (int y = 0; y < y_squares; y++) {
 		for (int x = 0; x < x_squares; x++) {
+			//if (x == 4 && y == 4) {
+				//__debugbreak();
+			//}
 			if (y > 0) {
 				add_link(get_square_army(x, y), get_square_army(x, y - 1));
 				if (x > 0) {
@@ -152,13 +155,13 @@ void SquareThread::update() {
 
 void SquareThread::update_links() {
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
-		it->update_links();
+		it->update_links_wave();
 	}
 }
 
 void SquareThread::update_squares() {
 	for (auto it = squares.begin(); it != squares.end(); ++it) {
-		it->update_squares();
+		it->update_squares_wave();
 	}
 }
 
@@ -167,9 +170,24 @@ SquareArmy& SquareCollection::get_square_army(int x, int y) {
 }
 
 SquareArmy& SquareCollection::get_square_army(int index) {
-	int thread = index / squares_per_thread;
-	int local_index= index % squares_per_thread;
-	return square_threads[thread].get_square_army(local_index);
+	//int thread = index / average_squares_per_thread;
+	int thread = 0;
+	while (true) {
+		int thread_squares = average_squares_per_thread;
+		if (thread < extra_thread_squares) {
+			thread_squares++;
+		}
+		if (index < thread_squares) {
+			break;
+		}
+		else {
+			thread++;
+			index -= thread_squares;
+		}
+
+	}
+	//int local_index= index % average_squares_per_thread;
+	return square_threads[thread].get_square_army(index);
 }
 
 SquareArmy& SquareThread::get_square_army(int local_index) {
@@ -203,6 +221,10 @@ SquareThread::~SquareThread() {
 }
 
 */
+
+SquareThread::SquareThread(const SquareThread&) {
+	std::cout << "never copy" << std::endl;
+}
 
 
 
