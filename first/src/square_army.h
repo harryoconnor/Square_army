@@ -76,11 +76,14 @@ public:
 	float sat_force = 0;
 	float sat_mass;
 
+	float target_hue;
+	float target_light;
+	float target_sat;
 
 	std::vector<Link> links;
 
 public:
-	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, GenRand& t_gen_rand, bool t_boundary);
+	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, float t_target_hue, float t_target_sat, float t_target_light,  GenRand& t_gen_rand, bool t_boundary);
 
 
 	void update_links_wave();

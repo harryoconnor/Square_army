@@ -21,6 +21,22 @@
 
 
 
+void rgb_array_to_hsl(uint8_t* rgb_image, float* hsl_image, int array_size) {
+	for (int i = 0; i < array_size; i += 3) {
+		double t_hue = 0;
+		double t_sat = 0;
+		double t_light = 0;
+		rgb2hsluv(rgb_image[i] / 256.0, rgb_image[i + 1] / 256.0, rgb_image[i + 2] / 256.0, &t_hue, &t_sat, &t_light);
+		hsl_image[i] = (float)t_hue;
+		hsl_image[i + 1] = (float)t_sat;
+		//write_data[i + 1] = 50;
+		hsl_image[i + 2] = t_light;
+	}
+
+}
+
+
+
 int main(void)
 {
 	int image_width, image_height, bpp;
@@ -29,7 +45,10 @@ int main(void)
 	//uint8_t* rgb_image = stbi_load("hue_contrast_large.jpg", &image_width, &image_height, &bpp, 3);
 	//uint8_t* rgb_image = stbi_load("mona.jpg", &image_width, &image_height, &bpp, 3);
 	//uint8_t* rgb_image = stbi_load("boris.jpg", &image_width, &image_height, &bpp, 3);
-	uint8_t* rgb_image = stbi_load("bt.jpg", &image_width, &image_height, &bpp, 3);
+	uint8_t* rgb_image = stbi_load("boris_same.jpg", &image_width, &image_height, &bpp, 3);
+
+	uint8_t* target_rgb_image = stbi_load("trump_same.jpg", &image_width, &image_height, &bpp, 3);
+
 	//uint8_t* rgb_image = stbi_load("bt_resize.jpg", &image_width, &image_height, &bpp, 3);
 	std::cout <<"values:"<< std::endl;
 	for (int i = 0; i < 100; i++) {
@@ -73,19 +92,16 @@ int main(void)
 	float* write_data = new float[data_array_size];
 	float* read_data = new float[data_array_size];
 
-	for (int i = 0; i < data_array_size; i += 3) {
-		double t_hue=0;
-		double t_sat=0;
-		double t_light=0;
-		rgb2hsluv(rgb_image[i]/256.0, rgb_image[i + 1] / 256.0, rgb_image[i + 2] / 256.0, &t_hue, &t_sat, &t_light);
-		write_data[i] = (float)t_hue;
-		write_data[i+1] = (float)t_sat;
-		//write_data[i + 1] = 50;
-		write_data[i+2] = t_light;
-	}
+	rgb_array_to_hsl(rgb_image, write_data, data_array_size);
+
+
+	float*  target_data= new float[data_array_size];
+	rgb_array_to_hsl(target_rgb_image, target_data, data_array_size);
+
+	
 	read_data = write_data;
 
-	SquareCollection all_squares(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, nthreads);
+	SquareCollection all_squares(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, target_data, nthreads);
 	memcpy(read_data, write_data, data_array_size * sizeof(float));
 	//SquareArmy bob2 = all_squares.get_square_army(9, 5);
 	//bob2.light = 0;

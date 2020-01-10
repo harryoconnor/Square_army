@@ -1,7 +1,7 @@
 
 #include "square_collection.h"
 
-SquareCollection::SquareCollection(int screen_width, int screen_height, int square_length, float* data, int thread_count){
+SquareCollection::SquareCollection(int screen_width, int screen_height, int square_length, float* data, float* target_data,  int thread_count) {
 	x_squares = screen_width / square_length;
 	y_squares = screen_height / square_length;
 	int square_array_size = (x_squares * y_squares);
@@ -21,7 +21,7 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 			real_thread_size++;
 		}
 		square_index_end = square_index_start+real_thread_size;
-		square_threads.emplace_back(square_index_start, square_index_end, x_squares, y_squares, data);
+		square_threads.emplace_back(square_index_start, square_index_end, x_squares, y_squares, data,  target_data);
 		square_index_start= square_index_end;
 	}
 	add_links();
@@ -29,7 +29,7 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 }
 
 
-SquareThread::SquareThread(int square_index_start, int square_index_end, int x_squares, int y_squares, float* data)//end exclusive
+SquareThread::SquareThread(int square_index_start, int square_index_end, int x_squares, int y_squares, float* data, float* target_data )//end exclusive
 {
 
 	int min_y = square_index_start / x_squares;
@@ -56,7 +56,7 @@ SquareThread::SquareThread(int square_index_start, int square_index_end, int x_s
 			bool boundary=false;
 			if (x == x_squares - 1 || y == y_squares - 1 || x==0 || y==0)
 				boundary = true;
-			squares.emplace_back(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand, boundary);
+			squares.emplace_back(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], target_data[(data_index)], target_data[(data_index + 1)], target_data[(data_index + 2)], gen_rand, boundary);
 		}
 	}
 
