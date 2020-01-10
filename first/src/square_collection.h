@@ -14,7 +14,7 @@ class SquareThread {
 public:
 	SquareThread(const SquareThread&);
 public:
-	SquareThread(int square_index_start, int square_index_end, int x_squares, float* data);
+	SquareThread(int square_index_start, int square_index_end, int x_squares, int y_squares, float* data);
 	//std::vector<SquareArmy> squares;
 	std::vector<SquareArmy> squares;
 	//GenRand *gen_rand=new GenRand();

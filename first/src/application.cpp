@@ -14,21 +14,53 @@
 #include <future>
 #include "square_collection.h"
 #include <memory>
+#include "hsluv.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 
 
 int main(void)
 {
+	int image_width, image_height, bpp;
+	stbi_set_flip_vertically_on_load(true);
+	//uint8_t* rgb_image = stbi_load("hue_contrast.jpg", &image_width, &image_height, &bpp, 3);
+	//uint8_t* rgb_image = stbi_load("hue_contrast_large.jpg", &image_width, &image_height, &bpp, 3);
+	//uint8_t* rgb_image = stbi_load("mona.jpg", &image_width, &image_height, &bpp, 3);
+	//uint8_t* rgb_image = stbi_load("boris.jpg", &image_width, &image_height, &bpp, 3);
+	uint8_t* rgb_image = stbi_load("bt.jpg", &image_width, &image_height, &bpp, 3);
+	//uint8_t* rgb_image = stbi_load("bt_resize.jpg", &image_width, &image_height, &bpp, 3);
+	std::cout <<"values:"<< std::endl;
+	for (int i = 0; i < 100; i++) {
+		std::cout << unsigned(rgb_image[i])<<" ";
+	}
+	std::cout << std::endl;
 
-	
+
+	//std::cout << "bpp is:" << bpp << std::endl;
+
+
+	double hue=0;
+	double sat=0;
+	double light=0;
+	double red=0.8;
+	double green=0.8;
+	double blue=0.8;
+
+	//rgb2hsluv(red, green, blue, &hue, &sat, &light);
+	//std::cout << "hue is: " << hue << " sat is: " << sat << " light is : " << light << std::endl;
+	//hsluv2rgb(hue, sat, light, &red, &green, &blue);
+	//std::cout << "red is: " << red << " green is: " << green << " blue is : " << blue << std::endl;
+
+
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	std::cout << "thread count:" << nthreads<< std::endl; 
 	//nthreads = 1000;
 	srand(time(NULL));
-	int SCREEN_WIDTH = 1000;
-	int SCREEN_HEIGHT = 600;
-	int square_length = 10;
+	int square_length = 2;
+	int SCREEN_WIDTH = image_width* square_length;
+	int SCREEN_HEIGHT = image_height* square_length;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
 	int data_array_size = (x_squares * y_squares)*3;
@@ -40,6 +72,18 @@ int main(void)
 
 	float* write_data = new float[data_array_size];
 	float* read_data = new float[data_array_size];
+
+	for (int i = 0; i < data_array_size; i += 3) {
+		double t_hue=0;
+		double t_sat=0;
+		double t_light=0;
+		rgb2hsluv(rgb_image[i]/256.0, rgb_image[i + 1] / 256.0, rgb_image[i + 2] / 256.0, &t_hue, &t_sat, &t_light);
+		write_data[i] = (float)t_hue;
+		write_data[i+1] = (float)t_sat;
+		//write_data[i + 1] = 50;
+		write_data[i+2] = t_light;
+	}
+	read_data = write_data;
 
 	SquareCollection all_squares(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, nthreads);
 	memcpy(read_data, write_data, data_array_size * sizeof(float));

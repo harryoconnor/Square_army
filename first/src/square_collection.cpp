@@ -21,7 +21,7 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 			real_thread_size++;
 		}
 		square_index_end = square_index_start+real_thread_size;
-		square_threads.emplace_back(square_index_start, square_index_end, x_squares, data);
+		square_threads.emplace_back(square_index_start, square_index_end, x_squares, y_squares, data);
 		square_index_start= square_index_end;
 	}
 	add_links();
@@ -29,7 +29,7 @@ SquareCollection::SquareCollection(int screen_width, int screen_height, int squa
 }
 
 
-SquareThread::SquareThread(int square_index_start, int square_index_end, int x_squares, float* data)//end exclusive
+SquareThread::SquareThread(int square_index_start, int square_index_end, int x_squares, int y_squares, float* data)//end exclusive
 {
 
 	int min_y = square_index_start / x_squares;
@@ -52,8 +52,11 @@ SquareThread::SquareThread(int square_index_start, int square_index_end, int x_s
 		for (int x = min_x; x <= max_x; x++) {
 			square_index = (y * x_squares) + x;
 			data_index = square_index * 3;
-			
-			squares.emplace_back(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand);
+
+			bool boundary=false;
+			if (x == x_squares - 1 || y == y_squares - 1 || x==0 || y==0)
+				boundary = true;
+			squares.emplace_back(x, y, data[(data_index)], data[(data_index + 1)], data[(data_index + 2)], gen_rand, boundary);
 		}
 	}
 
