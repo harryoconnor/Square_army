@@ -45,14 +45,15 @@ public:
 
 	int x;
 	int y;
+	int hue_index;
 
 	float& hue;
 	float& sat;
 	float& light;
 
-	float og_hue;
-	float og_sat;
-	float og_light;
+	//float og_hue;
+	//float og_sat;
+	//float og_light;
 
 	bool boundary;
 
@@ -76,15 +77,23 @@ public:
 	float sat_force = 0;
 	float sat_mass;
 
+	std::vector<float*> target_list;
+	int target_index = 0;
+
 	float target_hue;
 	float target_light;
 	float target_sat;
 
 	std::vector<Link> links;
 
-public:
-	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, float t_target_hue, float t_target_sat, float t_target_light,  GenRand& t_gen_rand, bool t_boundary);
+	bool at_target = false;
+	double cycle_start_time = glfwGetTime();
 
+public:
+	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, std::vector<float*> t_target_list,  GenRand& t_gen_rand, bool t_boundary, int hue_index);
+
+
+	void update_target();
 
 	void update_links_wave();
 	void update_squares_wave();

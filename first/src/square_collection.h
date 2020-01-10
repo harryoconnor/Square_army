@@ -14,7 +14,7 @@ class SquareThread {
 public:
 	SquareThread(const SquareThread&);
 public:
-	SquareThread(int square_index_start, int square_index_end, int x_squares, int y_squares, float* data, float* target_data);
+	SquareThread(int square_index_start, int square_index_end, int x_squares, int y_squares, float* data, std::vector<float*> target_list);
 	//std::vector<SquareArmy> squares;
 	std::vector<SquareArmy> squares;
 	//GenRand *gen_rand=new GenRand();
@@ -38,7 +38,7 @@ class SquareCollection {
 private:
 	SquareCollection(const SquareCollection&);
 public:
-	SquareCollection(int screen_width, int screen_height, int square_length, float* data, float* target_data, int thread_count);
+	SquareCollection(int screen_width, int screen_height, int square_length, float* data, std::vector<float*> target_list, int thread_count);
 	int x_squares=0;
 	int y_squares=0;
 	int average_squares_per_thread=0;

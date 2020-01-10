@@ -37,6 +37,7 @@ void rgb_array_to_hsl(uint8_t* rgb_image, float* hsl_image, int array_size) {
 
 
 
+
 int main(void)
 {
 	int image_width, image_height, bpp;
@@ -45,9 +46,12 @@ int main(void)
 	//uint8_t* rgb_image = stbi_load("hue_contrast_large.jpg", &image_width, &image_height, &bpp, 3);
 	//uint8_t* rgb_image = stbi_load("mona.jpg", &image_width, &image_height, &bpp, 3);
 	//uint8_t* rgb_image = stbi_load("boris.jpg", &image_width, &image_height, &bpp, 3);
-	uint8_t* rgb_image = stbi_load("boris_same.jpg", &image_width, &image_height, &bpp, 3);
+	uint8_t* rgb_image = stbi_load("boris.jpg", &image_width, &image_height, &bpp, 3);
 
-	uint8_t* target_rgb_image = stbi_load("trump_same.jpg", &image_width, &image_height, &bpp, 3);
+	uint8_t* target_rgb_image = stbi_load("trump.jpg", &image_width, &image_height, &bpp, 3);
+
+	std::vector<std::string> target_file_names{ "corbyn.jpg","farage.jpg","trump.jpg", "mogg.jpg", "bercow.jpg", "boris.jpg",  };
+
 
 	//uint8_t* rgb_image = stbi_load("bt_resize.jpg", &image_width, &image_height, &bpp, 3);
 	std::cout <<"values:"<< std::endl;
@@ -98,10 +102,24 @@ int main(void)
 	float*  target_data= new float[data_array_size];
 	rgb_array_to_hsl(target_rgb_image, target_data, data_array_size);
 
+	std::vector<float*> targets;
+
+	for (int i = 0; i < target_file_names.size(); i++) {
+		float* target_array = new float[data_array_size];
+		int local_width, local_height, local_bpp;
+		float*  local_target_data = new float[data_array_size];
+		uint8_t* target_rgb_image = stbi_load(target_file_names[i].c_str(), &local_width, &local_height, &local_bpp, 3);
+
+
+		rgb_array_to_hsl(target_rgb_image, local_target_data, data_array_size);
+		targets.push_back(local_target_data);
+		delete target_rgb_image;
+	}
+
 	
 	read_data = write_data;
 
-	SquareCollection all_squares(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, target_data, nthreads);
+	SquareCollection all_squares(SCREEN_WIDTH, SCREEN_HEIGHT, square_length, write_data, targets, nthreads);
 	memcpy(read_data, write_data, data_array_size * sizeof(float));
 	//SquareArmy bob2 = all_squares.get_square_army(9, 5);
 	//bob2.light = 0;

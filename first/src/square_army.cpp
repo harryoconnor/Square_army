@@ -1,34 +1,26 @@
 #include "square_army.h"
 
-SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, float t_target_hue, float t_target_sat, float t_target_light, GenRand& t_gen_rand, bool t_boundary)
+SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, std::vector<float*> t_target_list, GenRand& t_gen_rand, bool t_boundary , int t_hue_index)
 	:x(t_x), y(t_y), hue(t_hue), sat(t_sat), light(t_light), gen_rand(t_gen_rand), boundary(t_boundary),hue_mass(900),hue_resistance(0), 
-	sat_mass(900), sat_resistance(0), light_mass(900), light_resistance(0),og_hue(hue), og_sat(sat), og_light(light),
-	target_hue(t_target_hue) , target_sat(t_target_sat), target_light(t_target_light)
+	sat_mass(900), sat_resistance(0), light_mass(900), light_resistance(0),
+	target_list(t_target_list), hue_index(t_hue_index)
 {
 	links.reserve(8);
-	//hue = gen_rand.getStandardUniform_360();
-	//sat = gen_rand.getStandardUniform_100();
-	//light = gen_rand.getStandardUniform_100();
+	update_target();
 	//light = 50;
 	//sat = 80;
 	//hue = 50;
-	/*
-	if (x < 100) {
-		if (y < 60)
-			hue = 0;
-		else
-			hue = 90;
-	}else {
-		if (y < 60)
-			hue = 180;
-		else
-			hue = 270;
+	
+}
+
+void SquareArmy::update_target() {
+	target_hue = target_list[target_index][hue_index];
+	target_sat = target_list[target_index][hue_index+1];
+	target_light = target_list[target_index][hue_index+2];
+	target_index++;
+	if (target_index >= target_list.size() ) {
+		target_index = 0;
 	}
-	*/
-	//hue = gen_rand.getStandardUniform_360();
-	//hue = 0;
-	//sat = 80;
-	//sat= gen_rand->getStandardUniform_100()/2+50;
 }
 
 
@@ -78,47 +70,54 @@ void SquareArmy::update_squares_wave() {
 		}
 
 		double time = glfwGetTime();
-		double mod_time = fmod(time,40);
-		if (mod_time > 10 && mod_time < 20) {
-			if (abs(hue - target_hue) < pow((mod_time-15)/2,2)) {
-				hue = target_hue;
-				hue_force = 0;
-				hue_velocity = 0;
-				//hue_mass -= 0.01;
-			}
-			if (abs(sat - target_sat) < pow((mod_time - 15) /3, 2)) {
-				sat = target_sat;
-				sat_force = 0;
-				sat_velocity = 0;
-				//sat_mass -= 0.01;
-			}
-			if (abs(light - target_light) < pow((mod_time - 15) /3, 2)) {
-				light = target_light;
-				light_force = 0;
-				light_velocity = 0;
-				//light_mass -= 0.01;
+		double cycle_time = time - cycle_start_time;
+
+		if (at_target) {
+			hue_velocity = (target_hue-hue)/100;
+			hue_force = 0;
+			sat_velocity = (target_sat-sat) / 100;
+			sat_force = 0;
+			light_velocity = (target_light-light) / 100;
+			light_force = 0;
+			if (cycle_time > 5) {
+				cycle_start_time = time;
+				at_target = false;
+				update_target();
 			}
 		}
-		else if (mod_time > 30) {
-			if (abs(hue - og_hue) < pow((mod_time - 30), 2)) {
-				hue = og_hue;
-				hue_force = 0;
-				hue_velocity = 0;
-				//hue_mass -= 0.01;
-			}
-			if (abs(sat - og_sat) < pow((mod_time - 30) / 3, 2)) {
-				sat = og_sat;
-				sat_force = 0;
-				sat_velocity = 0;
-				//sat_mass -= 0.01;
-			}
-			if (abs(light - og_light) < pow((mod_time - 30) / 3, 2)) {
-				light = og_light;
-				light_force = 0;
-				light_velocity = 0;
-				//light_mass -= 0.01;
+		else {
+
+			if (cycle_time > 10) {
+				//bool all_three = true;
+				if (abs(hue - target_hue) < 2) {
+					hue = target_hue;
+					hue_force = 0;
+					hue_velocity = 0;
+					at_target = true;
+					//hue_mass -= 0.01;
+				}
+				if (abs(sat - target_sat) < 1) {
+					sat = target_sat;
+					sat_force = 0;
+					sat_velocity = 0;
+					at_target = true;
+					//sat_mass -= 0.01;
+				}
+
+				if (abs(light - target_light) < 1) {
+					light = target_light;
+					light_force = 0;
+					light_velocity = 0;
+					at_target = true;
+					//light_mass -= 0.01;
+				}
+
+				if (at_target == true) {
+					cycle_start_time = time;
+				}
 			}
 		}
+		
 
 
 
