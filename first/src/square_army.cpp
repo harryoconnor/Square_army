@@ -1,8 +1,8 @@
 #include "square_army.h"
 
 SquareArmy::SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, std::vector<float*> t_target_list, GenRand& t_gen_rand, bool t_boundary , int t_hue_index)
-	:x(t_x), y(t_y), hue(t_hue), sat(t_sat), light(t_light), gen_rand(t_gen_rand), boundary(t_boundary),hue_mass(900),hue_resistance(0), 
-	sat_mass(900), sat_resistance(0), light_mass(900), light_resistance(0),
+	:x(t_x), y(t_y), hue(t_hue), sat(t_sat), light(t_light), gen_rand(t_gen_rand), boundary(t_boundary),hue_mass(400),hue_resistance(0),
+	sat_mass(400), sat_resistance(0), light_mass(400), light_resistance(0),
 	target_list(t_target_list), hue_index(t_hue_index)
 {
 	links.reserve(8);
@@ -54,7 +54,7 @@ void SquareArmy::update_squares_wave() {
 	//hue_change = 0;
 	//float hue_sum = 0;
 	//hue_change += (2.5 - gen_rand.getStandardUniform_100() / 10);
-
+	boundary = false;
 	if (!boundary) {
 
 		light_force = 0;
@@ -70,16 +70,20 @@ void SquareArmy::update_squares_wave() {
 		}
 
 		double time = glfwGetTime();
+		//double time = 10;
 		double cycle_time = time - cycle_start_time;
 
 		if (at_target) {
-			hue_velocity = (target_hue-hue)/100;
+			hue = target_hue;
 			hue_force = 0;
-			sat_velocity = (target_sat-sat) / 100;
+			hue_velocity = 0;
+			sat = target_sat;
 			sat_force = 0;
-			light_velocity = (target_light-light) / 100;
+			sat_velocity = 0;
+			light = target_light;
 			light_force = 0;
-			if (cycle_time > 5) {
+			light_velocity = 0;
+			if (cycle_time > 10) {
 				cycle_start_time = time;
 				at_target = false;
 				update_target();
@@ -88,14 +92,54 @@ void SquareArmy::update_squares_wave() {
 		else {
 
 			if (cycle_time > 10) {
-				//bool all_three = true;
-				if (abs(hue - target_hue) < 2) {
-					hue = target_hue;
-					hue_force = 0;
-					hue_velocity = 0;
-					at_target = true;
+				if (abs(hue - target_hue) + abs(sat - target_sat) + abs(light - target_light) < pow((cycle_time - 10) / 4, 2)) {
+					bool all_three = true;
+					//hue = target_hue;
+					if (abs(hue - target_hue) < 20) {
+						hue = target_hue;
+						hue_force = 0;
+						hue_velocity = 0;
+					}
+					else {
+						hue_force = (target_hue - hue) * abs(target_hue - hue) / 50;
+						all_three = false;
+						//hue_resistance = 0.25 / (1 + abs(hue - target_hue));
+					}
+
+					if (abs(sat - target_sat) < 10) {
+						sat = target_sat;
+						sat_force = 0;
+						sat_velocity = 0;
+
+					}
+					else {
+						sat_force = (target_sat - sat) * abs(target_sat - sat) / 50;
+						all_three = false;
+						//sat_resistance = 0.25 / (1 + +abs(sat - target_sat));
+					}
+					//sat_velocity = 0;
+					//light = target_light;
+					//light_velocity = 0;
+					if (abs(light - target_light) < 10) {
+						light = target_light;
+						light_force = 0;
+						light_velocity = 0;
+					}
+					else {
+						light_force = (target_light - light) * abs(target_light - light) / 50;
+						all_three = false;
+						//light_resistance = 0.25 / (1 + abs(light - target_light));
+					}
+					//at_target = true;
+					//cycle_start_time = time;
 					//hue_mass -= 0.01;
+
+					if (all_three) {
+						at_target = true;
+						cycle_start_time = time;
+					}
 				}
+				/*
 				if (abs(sat - target_sat) < 1) {
 					sat = target_sat;
 					sat_force = 0;
@@ -115,6 +159,7 @@ void SquareArmy::update_squares_wave() {
 				if (at_target == true) {
 					cycle_start_time = time;
 				}
+				*/
 			}
 		}
 		
@@ -140,9 +185,33 @@ void SquareArmy::update_squares_wave() {
 		sat_velocity = sat_velocity * (1 - sat_resistance);
 
 
+		if (sat > 100) {
+			sat = 100;
+			if (sat_velocity > 0) {
+				sat_velocity = 0;
+			}
+		}
+		else if (sat < 0){
+			sat = 0;
+			if (sat_velocity < 0) {
+				sat_velocity = 0;
+			}
 
-		sat = std::max(0.0f, std::min(sat, 100.0f));
-		light = std::max(0.0f, std::min(light, 100.0f));
+		}
+		if (light > 100) {
+			light = 100;
+			if (light_velocity > 0) {
+				light_velocity = 0;
+			}
+		}
+		else if (sat < 0) {
+			light = 0;
+			if (light_velocity < 0) {
+				light_velocity = 0;
+			}
+
+		}
+
 
 
 		//double time_mod = fmod(glfwGetTime(), 10);

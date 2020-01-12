@@ -1,3 +1,5 @@
+# define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -15,11 +17,12 @@
 #include "square_collection.h"
 #include <memory>
 #include "hsluv.h"
+#include <experimental/filesystem>
+#include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-
+namespace fs = std::experimental::filesystem;
 
 void rgb_array_to_hsl(uint8_t* rgb_image, float* hsl_image, int array_size) {
 	for (int i = 0; i < array_size; i += 3) {
@@ -40,20 +43,17 @@ void rgb_array_to_hsl(uint8_t* rgb_image, float* hsl_image, int array_size) {
 
 int main(void)
 {
+	std::vector<std::string> target_file_names;
+	std::string path = "images";
+	for (const auto& entry : fs::directory_iterator(path)) {
+		target_file_names.push_back(entry.path().string());
+	}
+
 	int image_width, image_height, bpp;
 	stbi_set_flip_vertically_on_load(true);
-	//uint8_t* rgb_image = stbi_load("hue_contrast.jpg", &image_width, &image_height, &bpp, 3);
-	//uint8_t* rgb_image = stbi_load("hue_contrast_large.jpg", &image_width, &image_height, &bpp, 3);
-	//uint8_t* rgb_image = stbi_load("mona.jpg", &image_width, &image_height, &bpp, 3);
-	//uint8_t* rgb_image = stbi_load("boris.jpg", &image_width, &image_height, &bpp, 3);
-	uint8_t* rgb_image = stbi_load("boris.jpg", &image_width, &image_height, &bpp, 3);
+	uint8_t* rgb_image = stbi_load(target_file_names[0].c_str(), &image_width, &image_height, &bpp, 3);
 
-	uint8_t* target_rgb_image = stbi_load("trump.jpg", &image_width, &image_height, &bpp, 3);
-
-	std::vector<std::string> target_file_names{ "corbyn.jpg","farage.jpg","trump.jpg", "mogg.jpg", "bercow.jpg", "boris.jpg",  };
-
-
-	//uint8_t* rgb_image = stbi_load("bt_resize.jpg", &image_width, &image_height, &bpp, 3);
+	std::cout <<"width: "<< image_width<<" height: "<< image_height<<" bpp:"<< bpp << std::endl;
 	std::cout <<"values:"<< std::endl;
 	for (int i = 0; i < 100; i++) {
 		std::cout << unsigned(rgb_image[i])<<" ";
@@ -61,28 +61,19 @@ int main(void)
 	std::cout << std::endl;
 
 
-	//std::cout << "bpp is:" << bpp << std::endl;
 
 
-	double hue=0;
-	double sat=0;
-	double light=0;
-	double red=0.8;
-	double green=0.8;
-	double blue=0.8;
+	
 
-	//rgb2hsluv(red, green, blue, &hue, &sat, &light);
-	//std::cout << "hue is: " << hue << " sat is: " << sat << " light is : " << light << std::endl;
-	//hsluv2rgb(hue, sat, light, &red, &green, &blue);
-	//std::cout << "red is: " << red << " green is: " << green << " blue is : " << blue << std::endl;
+
 
 
 	unsigned int nthreads = std::thread::hardware_concurrency();
 	std::cout << "thread count:" << nthreads<< std::endl; 
-	//nthreads = 1000;
+	//nthreads = 6;
 	srand(time(NULL));
 	int square_length = 2;
-	int SCREEN_WIDTH = image_width* square_length;
+	int SCREEN_WIDTH = image_width * square_length;
 	int SCREEN_HEIGHT = image_height* square_length;
 	int x_squares = SCREEN_WIDTH / square_length;
 	int y_squares = SCREEN_HEIGHT / square_length;
@@ -100,7 +91,6 @@ int main(void)
 
 
 	float*  target_data= new float[data_array_size];
-	rgb_array_to_hsl(target_rgb_image, target_data, data_array_size);
 
 	std::vector<float*> targets;
 

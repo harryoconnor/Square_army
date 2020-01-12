@@ -78,7 +78,7 @@ public:
 	float sat_mass;
 
 	std::vector<float*> target_list;
-	int target_index = 0;
+	int target_index = 1;
 
 	float target_hue;
 	float target_light;
@@ -87,7 +87,7 @@ public:
 	std::vector<Link> links;
 
 	bool at_target = false;
-	double cycle_start_time = glfwGetTime();
+	double cycle_start_time = glfwGetTime()-10;
 
 public:
 	SquareArmy(int t_x, int t_y, float& t_hue, float& t_sat, float& t_light, std::vector<float*> t_target_list,  GenRand& t_gen_rand, bool t_boundary, int hue_index);
